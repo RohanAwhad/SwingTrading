@@ -1,3 +1,4 @@
+import numpy as np
 import plotly.graph_objects as go
 import sys
 import time
@@ -13,27 +14,35 @@ def plot(data, title):
     return fig
 
 
+def trendline(arr, n_days):
+    arr = arr[-n_days:]
+    idx = list(range(len(arr)))
+    return np.polyfit(idx, arr, deg=1)[-2]
+
+
 def main():
+    # tckrs = ['3MINDIA', '63MOONS', 'AARON', 'AARTIDRUGS', 'AARTISURF', 'AAVAS', 'SBIN', 'ABAN', 'DRCSYSTEMS']
     tckrs = get_tckrs()
+    rising_stocks = []
     if len(sys.argv) > 1:
         prev_idx = int(sys.argv[1])
     else:
         prev_idx = 0
 
     for i, tckr in enumerate(tckrs):
-        tckr = 'SBIN'
         if i < prev_idx:
             continue
         print(f'{i}] Loading {tckr} prices ...')
         try:
             data = get_data(tckr)
-            print('  - Got data')
-            fig = plot(data, tckr)
-            fig.write_image(f'yahoo/plots/images/{tckr}.png')
-            time.sleep(5)
+            if trendline(data['Close'].rolling(44).mean().to_list(), n_days=20) > 0.5:
+                rising_stocks.append(tckr)
+
+            # fig = plot(data, tckr)
+            # fig.write_image(f'yahoo/plots/images/{tckr}.png')
         except Exception as e:
             print('   * Failed', e)
-        break
+    print(rising_stocks)
 
 
 if __name__ == '__main__':
