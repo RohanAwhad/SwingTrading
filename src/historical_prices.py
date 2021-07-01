@@ -33,6 +33,7 @@ def get_data(tckr):
 
 
 def update_data(end_date, last_date, ret, tckr):
+    print(f'Updating {tckr} ...')
     recent_df = req_data(end_date, last_date, tckr)
     ret = pd.concat((ret, recent_df), axis=0).drop_duplicates().sort_index()
     return ret
