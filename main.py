@@ -17,7 +17,6 @@ def get_green_candles(stock_list):
             latest_value = data.iloc[-1, :]
             if latest_value['Close'] - latest_value['Open'] > 0:
                 print(f'Latest candle is green for {tckr}')
-                #ret.append(tckr)
                 sma = data['Close'].rolling(44).mean()
                 if abs(sma.iloc[-1] - latest_value['Low'])/sma.iloc[-1] * 100 < 3.5:
                     ret.append(tckr)
@@ -48,12 +47,13 @@ def trading_value(data, risk=1000):
     return ret
 
 def main():
-    selected_stocks = get_green_candles(get_rising_stocks())
+    # selected_stocks = get_green_candles(get_rising_stocks())
+    selected_stocks = pd.read_csv('data/ind_nifty200list.csv')['Symbol'].to_list()
     col_1, col_2 = st.beta_columns(2)
     try:
         stock = col_1.selectbox('Select a stock to view its prices', selected_stocks)
         data = get_data(stock)
-        col_2.table(trading_value(data))
+        # col_2.table(trading_value(data))
         st.plotly_chart(plot_44SMA(data, stock))
     except Exception as e:
         st.write(f'Failed to load {stock}. {e}')

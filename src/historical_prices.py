@@ -9,9 +9,9 @@ from datetime import datetime, timedelta
 
 
 def get_tckrs():
-    df = pd.read_csv('data/NSE_equity.csv')
-    for tckr in df['SYMBOL'].to_list():
-        yield tckr
+    df = pd.read_csv('data/ind_nifty200list.csv')
+    for tckr in df['Symbol'].to_list():
+        yield tckr.strip()
 
 
 def get_data(tckr):
