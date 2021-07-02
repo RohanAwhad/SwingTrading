@@ -16,12 +16,15 @@ def get_tckrs():
 
 def get_data(tckr):
     end_date = datetime.today()
+    if end_date.hour < 16:
+        end_date = datetime(end_date.year, end_date.month, end_date.day)
+
     if os.path.exists(f'yahoo/price_history/{tckr}.csv'):
         ret = pd.read_csv(f'yahoo/price_history/{tckr}.csv', index_col=0)\
             .dropna(axis=0).drop_duplicates().sort_index()
         last_date = datetime.strptime(ret.index[-1], '%Y-%m-%d')
 
-        if end_date - last_date >= timedelta(days=1):
+        if end_date - last_date > timedelta(days=1):
             ret = update_data(end_date, last_date, ret, tckr)
     else:
         delta = timedelta(days=365)
@@ -33,7 +36,7 @@ def get_data(tckr):
 
 
 def update_data(end_date, last_date, ret, tckr):
-    print(f'Updating {tckr} ...')
+    print(f'Updating {tckr} till {end_date.strftime("%Y-%m-%d")} ...')
     recent_df = req_data(end_date, last_date, tckr)
     ret = pd.concat((ret, recent_df), axis=0).drop_duplicates().sort_index()
     return ret
