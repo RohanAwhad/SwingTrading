@@ -39,7 +39,7 @@ def update_rising_stocks():
         print(f'{i}] Loading {tckr} prices ...')
         try:
             data = get_data(tckr)
-            if trendline(data['Close'].rolling(44).mean().to_list(), n_days=20) > 0.5:
+            if trendline(data['Close'].rolling(44).mean().to_list(), n_days=20) > 0.7:
                 rising_stocks.append(tckr)
 
         except Exception as e:
